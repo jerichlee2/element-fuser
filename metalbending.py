@@ -205,7 +205,7 @@ class MetalBending:
 innerLength = 31 #mm
 five_leg = 13.1318 #mm
 six_leg = 15.3162 #mm
-clearance = 0
+clearance = 2
 speed = 100 #mm
 flatbridgep1 = 0 #mm
 angleThree = -3
@@ -233,6 +233,6 @@ df2 = pd.DataFrame(df_198)
 
 print(p1.GetTotalLengthFinal())
 print(p1.GetTotalLengthPrev())
-p1.line('testc.png')
+p1.line('testd.png')
 
 df1.to_csv('OB1K71by.csv', header=True, mode='w', index = False)
