@@ -18,6 +18,7 @@ def display_excel_file(excel_file_path, sheet_name):
     sg.popup_scrolled(df.dtypes, "=" * 50, df, title=filename)
 
 
+
 def convert_to_csv(excel_file_path, output_folder, sheet_name, separator, decimal):
     df = pd.read_excel(excel_file_path, sheet_name)
     filename = Path(excel_file_path).stem
@@ -57,13 +58,24 @@ def main_window():
     # ------ Menu Definition ------ #
     menu_def = [["Toolbar", ["Command 1", "Command 2", "---", "Command 3", "Command 4"]],
                 ["Help", ["Settings", "About", "Exit"]]]
+    
+    image_viewer_column = [
+    [sg.T("Element Diagram:" , s=15, justification="r")],
+    [sg.Text(size=(40, 1), key="-TOUT-")],
+    [sg.Image(key="-IMAGE-")],
+]
 
 
     # ------ GUI Definition ------ #
     layout = [[sg.MenubarCustom(menu_def, tearoff=False)],
-              [sg.T("Input File:", s=15, justification="r"), sg.I(key="-IN-"), sg.FileBrowse(file_types=(("Excel Files", "*.xls*"),))],
+              [sg.T("Recipe Sheet:", s=15, justification="r"), sg.I(key="-IN-"), sg.FileBrowse(file_types=(("Excel Files", "*.csv*"),))],
+              [sg.T("Program Number:", s=15, justification="r"), sg.I(key="-NUMBER-", s=4)],
+              [sg.B("Visualize", s=16)],
+              [sg.Column(image_viewer_column)],
               [sg.T("Output Folder:", s=15, justification="r"), sg.I(key="-OUT-"), sg.FolderBrowse()],
-              [sg.Exit(s=16, button_color="tomato"),sg.B("Settings", s=16), sg.B("Display Excel File", s=16), sg.B("Convert To CSV", s=16)],]
+              [sg.Exit(s=16, button_color="tomato"),sg.B("Settings", s=16), sg.B("Display Excel File", s=16), sg.B("Save To Re", s=16)],]
+    
+    
 
     window_title = settings["GUI"]["title"]
     window = sg.Window(window_title, layout, use_custom_titlebar=True)
@@ -74,7 +86,7 @@ def main_window():
             break
         if event == "About":
             window.disappear()
-            sg.popup(window_title, "Version 1.0", "Convert Excel files to CSV", grab_anywhere=True)
+            sg.popup(window_title, "Version 1.0", "ElementFuser", grab_anywhere=True)
             window.reappear()
         if event in ("Command 1", "Command 2", "Command 3", "Command 4"):
             sg.popup_error("Not yet implemented")
@@ -92,6 +104,16 @@ def main_window():
                     separator=settings["CSV"]["separator"],
                     decimal=settings["CSV"]["decimal"],
                 )
+
+        if event == "Visualize":
+            if (is_valid_path(values["-IN-"])):
+                df = pd.read_csv(values["-IN-"])
+                elementcode = df.loc[int(values["-NUMBER-"]) - 1,:].tolist()
+                p1 = mb.MetalBending(elementcode)
+                p1.line('diagram.png')
+                window["-IMAGE-"].update(filename='diagram.png')
+
+
     window.close()
 
 
