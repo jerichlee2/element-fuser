@@ -86,7 +86,7 @@ def main_window():
             break
         if event == "About":
             window.disappear()
-            sg.popup(window_title, "Version 1.0", "ElementFuser", grab_anywhere=True)
+            sg.popup(window_title, "Version 1.0", "Littelfuse Inc.", "By Jerich Lee", "7/20/23", grab_anywhere=True)
             window.reappear()
         if event in ("Command 1", "Command 2", "Command 3", "Command 4"):
             sg.popup_error("Not yet implemented")
