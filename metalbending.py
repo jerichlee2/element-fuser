@@ -154,34 +154,54 @@ class MetalBending:
         theta = acos((i_hat.dot(vector))/(vector.norm()))
         return theta
     
-    # def GetRotation(self):
-    #     diff_list = self.GetDiff()
-    #     angles = self.RoundAngles()
+    def GetRotationPoints(self):
+        diff_list = self.GetDiff()
+        angles = self.RoundAngles()
 
 
-    #     total_angle = 0
-    #     total_pos_x = 0
-    #     total_pos_y = 0
-    #     point1 = Matrix([0,0])
-    #     point2 = Matrix([0,0])
+        total_angle = 0
+        total_pos_x = 0
+        total_pos_y = 0
+        point1 = Matrix([0,0])
+        point2 = Matrix([0,0])
 
-    #     for i in range(0, len(angles)-1):
+        for i in range(0, len(angles)-1):
+            
+            if abs(angles[i]) == 45:
+                
+                point1 = Matrix([total_pos_x, total_pos_y])
+                point2 = Matrix([total_pos_x + 5*diff_list[i]*cos(np.deg2rad(total_angle + angles[i])), total_pos_y + 5*diff_list[i]*sin(np.deg2rad(total_angle + angles[i]))])
+                break
 
-    #         if abs(angles[i]) == 45:
-    #             point1 = Matrix([total_pos_x, total_pos_y])
-    #             point2 = Matrix([total_pos_x + 5*diff_list[i]*cos(np.deg2rad(total_angle)), total_pos_y + 5*diff_list[i]*sin(np.deg2rad(total_angle))])
-    #             break
-  
-    #         total_angle += angles[i]
-    #         total_pos_x += 5*diff_list[i]*cos(np.deg2rad(total_angle))
-    #         total_pos_y += 5*diff_list[i]*sin(np.deg2rad(total_angle))
+            total_angle += angles[i]
+            total_pos_x += 5*diff_list[i]*cos(np.deg2rad(total_angle))
+            total_pos_y += 5*diff_list[i]*sin(np.deg2rad(total_angle))
 
-    #     return [point1, point2]
+        return [point1, point2]
+    
+
+    # figure out how much to rotate image for U-shaped element orientation
+    def GetRotationAngle(self):
+        points = self.GetRotationPoints()
+        calculatedangle = int(self.CalculateAngle(points[0], points[1])*(180/np.pi))
+        value = 0
+
+        if calculatedangle == 45:
+            value = 0
+        
+        if calculatedangle == 135:
+            value = -90
+
+        if calculatedangle == 270:
+            value = 180
+        
+        if calculatedangle == 315:
+            value = 90
+
+        return value
 
             
-                
 
-    
     
     def GeneratePoints(self):
         init_x = self.GetBoundary()[0][0] + 50
@@ -250,7 +270,7 @@ p2 = MetalBending(OB1K71_5_bridge)
 
 
 
-# print(p1.GetRotation())
+print(p1.GetRotationAngle())
 
 # print(p1.GeneratePoints())
 

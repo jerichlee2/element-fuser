@@ -3,6 +3,7 @@ import metalbending as mb
 
 import pandas as pd  # pip install pandas openpyxl
 import PySimpleGUI as sg  # pip install pysimplegui
+from PIL import Image
 
 
 def is_valid_path(filepath):
@@ -111,7 +112,13 @@ def main_window():
                 elementcode = df.loc[int(values["-NUMBER-"]) - 1,:].tolist()
                 p1 = mb.MetalBending(elementcode)
                 p1.line('diagram.png')
-                window["-IMAGE-"].update(filename='diagram.png')
+                # Original_Image = Image.open("diagram.png")
+  
+                # # Rotate Image By 180 Degree
+                # rotated_image1 = Original_Image.rotate(p1.GetRotationAngle())
+                # rotated_image1.save("diagram.png")
+  
+                window["-IMAGE-"].update("diagram.png")
 
 
     window.close()
