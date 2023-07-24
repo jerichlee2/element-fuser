@@ -181,24 +181,24 @@ class MetalBending:
     
 
     # figure out how much to rotate image for U-shaped element orientation
-    def GetRotationAngle(self):
-        points = self.GetRotationPoints()
-        calculatedangle = int(self.CalculateAngle(points[0], points[1])*(180/np.pi))
-        value = 0
+    # def GetRotationAngle(self):
+    #     points = self.GetRotationPoints()
+    #     calculatedangle = int(self.CalculateAngle(points[0], points[1])*(180/np.pi))
+    #     value = 0
 
-        if calculatedangle == 45:
-            value = 0
+    #     if calculatedangle == 45:
+    #         value = 0
         
-        if calculatedangle == 135:
-            value = -90
+    #     if calculatedangle == 135:
+    #         value = -90
 
-        if calculatedangle == 270:
-            value = 180
+    #     if calculatedangle == 270:
+    #         value = 180
         
-        if calculatedangle == 315:
-            value = 90
+    #     if calculatedangle == 315:
+    #         value = 90
 
-        return value
+    #     return value
 
             
 
@@ -270,7 +270,6 @@ p2 = MetalBending(OB1K71_5_bridge)
 
 
 
-print(p1.GetRotationAngle())
 
 # print(p1.GeneratePoints())
 

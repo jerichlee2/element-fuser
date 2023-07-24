@@ -1,5 +1,6 @@
 from pathlib import Path  # core python module
 import metalbending as mb
+import modifyelement as me
 
 import pandas as pd  # pip install pandas openpyxl
 import PySimpleGUI as sg  # pip install pysimplegui
@@ -20,11 +21,13 @@ def display_excel_file(excel_file_path, sheet_name):
 
 
 
-def convert_to_csv(excel_file_path, output_folder, sheet_name, separator, decimal):
-    df = pd.read_excel(excel_file_path, sheet_name)
+def convert_to_csv(p1, excel_file_path, output_folder):
+    df_194 = p1.GetFinalRow()
+    df1 = pd.DataFrame(df_194)
+
     filename = Path(excel_file_path).stem
     outputfile = Path(output_folder) / f"{filename}.csv"
-    df.to_csv(outputfile, sep=separator, decimal=decimal, index=False)
+    df1.to_csv(outputfile, header=True, mode='w', index=False)
     sg.popup_no_titlebar("Done! :)")
 
 
@@ -72,9 +75,12 @@ def main_window():
               [sg.T("Recipe Sheet:", s=15, justification="r"), sg.I(key="-IN-"), sg.FileBrowse(file_types=(("Excel Files", "*.csv*"),))],
               [sg.T("Program Number:", s=15, justification="r"), sg.I(key="-NUMBER-", s=4)],
               [sg.B("Visualize", s=16)],
+              [sg.T("Enter Location", s=15, justification="r"), sg.I(key="-LOCATION-", s=4)],
+              [sg.T("Enter New Length:", s=15, justification="r"), sg.I(key="-LENGTH-", s=4)],
+              [sg.B("Update", s=16)],
               [sg.Column(image_viewer_column)],
               [sg.T("Output Folder:", s=15, justification="r"), sg.I(key="-OUT-"), sg.FolderBrowse()],
-              [sg.Exit(s=16, button_color="tomato"),sg.B("Settings", s=16), sg.B("Display Excel File", s=16), sg.B("Save To Re", s=16)],]
+              [sg.Exit(s=16, button_color="tomato"),sg.B("Settings", s=16), sg.B("Save To Recipe", s=16)],]
     
     
 
@@ -83,6 +89,9 @@ def main_window():
 
     while True:
         event, values = window.read()
+        
+
+        
         if event in (sg.WINDOW_CLOSED, "Exit"):
             break
         if event == "About":
@@ -96,29 +105,64 @@ def main_window():
                 display_excel_file(values["-IN-"], settings["EXCEL"]["sheet_name"])
         if event == "Settings":
             settings_window(settings)
-        if event == "Convert To CSV":
+        if event == "Save To Recipe":
             if (is_valid_path(values["-IN-"])) and (is_valid_path(values["-OUT-"])):
-                convert_to_csv(
-                    excel_file_path=values["-IN-"],
-                    output_folder=values["-OUT-"],
-                    sheet_name=settings["EXCEL"]["sheet_name"],
-                    separator=settings["CSV"]["separator"],
-                    decimal=settings["CSV"]["decimal"],
-                )
+                try:
+                    elementcode = df.loc[int(values["-NUMBER-"]) - 1,:].tolist()
+                    location = int(values["-LOCATION-"])
+                    length = int(values["-LENGTH-"])
+                    p1 = me.ModifyElement(location, elementcode, length)
+                    convert_to_csv(p1=p1,
+                        excel_file_path=values["-IN-"],
+                        output_folder=values["-OUT-"],
+                    )
+                except:
+                    sg.popup_error("File Not Updated")
 
         if event == "Visualize":
             if (is_valid_path(values["-IN-"])):
                 df = pd.read_csv(values["-IN-"])
-                elementcode = df.loc[int(values["-NUMBER-"]) - 1,:].tolist()
-                p1 = mb.MetalBending(elementcode)
-                p1.line('diagram.png')
+
+                try:
+                    elementcode = df.loc[int(values["-NUMBER-"]) - 1,:].tolist()
+                    p1 = mb.MetalBending(elementcode)
+                    
+                    
+                    p1.line('diagram.png')
                 # Original_Image = Image.open("diagram.png")
   
                 # # Rotate Image By 180 Degree
                 # rotated_image1 = Original_Image.rotate(p1.GetRotationAngle())
                 # rotated_image1.save("diagram.png")
   
-                window["-IMAGE-"].update("diagram.png")
+                    window["-IMAGE-"].update("diagram.png")
+                except:
+                    sg.popup_error("Does not exist")
+
+
+        if event == "Update":
+            
+            if (is_valid_path(values["-IN-"])):
+                df = pd.read_csv(values["-IN-"])
+
+                try:
+                    row = df.loc[int(values["-NUMBER-"]) - 1,:].tolist()
+                    location = int(values["-LOCATION-"])
+                    length = int(values["-LENGTH-"])
+
+                    p1 = me.ModifyElement(location, row, length)
+
+
+                    p1.line('diagram1.png')
+                    # Original_Image = Image.open("diagram.png")
+    
+                    # # Rotate Image By 180 Degree
+                    # rotated_image1 = Original_Image.rotate(p1.GetRotationAngle())
+                    # rotated_image1.save("diagram.png")
+  
+                    window["-IMAGE-"].update("diagram1.png")
+                except:
+                    sg.popup_error("Does not exist")
 
 
     window.close()
