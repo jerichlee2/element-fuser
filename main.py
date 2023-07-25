@@ -76,7 +76,7 @@ def main_window():
               [sg.T("Program Number:", s=15, justification="r"), sg.I(key="-NUMBER-", s=4)],
               [sg.B("Visualize", s=16)],
               [sg.T("Enter Location", s=15, justification="r"), sg.I(key="-LOCATION-", s=4)],
-              [sg.T("Enter New Length:", s=15, justification="r"), sg.I(key="-LENGTH-", s=4)],
+              [sg.T("Change Length:", s=15, justification="r"), sg.I(key="-LENGTH-", s=4)],
               [sg.B("Update", s=16)],
               [sg.Column(image_viewer_column)],
               [sg.T("Output Folder:", s=15, justification="r"), sg.I(key="-OUT-"), sg.FolderBrowse()],

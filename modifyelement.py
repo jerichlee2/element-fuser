@@ -67,11 +67,11 @@ class ModifyElement:
         loc = self.location
         
         if loc == 1:
-            new_length_list.insert(0, self.length)
+            new_length_list.insert(0, pos_list[0] + self.length)
 
         else:
             new_length_list.insert(0, pos_list[0])
-            new_length_list[loc - 1] = self.length
+            new_length_list[loc - 1] = pos_list[loc-1] + self.length
         
         return new_length_list
     
@@ -144,6 +144,7 @@ class ModifyElement:
         finalRow = []
         pos = self.GetPosFinal()
         angles = self.GetAngles()
+        speed = 100
         
         for i in range(0, 3):
             finalRow.append(self.row[i])
@@ -151,7 +152,7 @@ class ModifyElement:
         finalRow.append(self.GetFlatLength())
         
         
-        for i in range(0, len(pos)):
+        for i in range(0, len(pos)-1):
             finalRow.append(round(pos[i], 2))
             finalRow.append(angles[i])
             finalRow.append(speed)      
@@ -209,6 +210,7 @@ class ModifyElement:
 
     # TODO: Fix angle tolerance
     # TODO: Fix empty rows
+    # TODO: Fix negative values added
 
     def FinalAngleDirection(self, angle):
         if angle*self.GetAngles()[-2] > 1:
@@ -217,37 +219,37 @@ class ModifyElement:
         else:
             return -1
 
-    def CalculateAngle(self, point1, point2):
-        i_hat = Matrix([1, 0])
-        vector12 = point2 - point1
-        vector = Matrix([vector12[0], vector12[1]])
-        theta = acos((i_hat.dot(vector))/(vector.norm()))
-        return theta
+    # def CalculateAngle(self, point1, point2):
+    #     i_hat = Matrix([1, 0])
+    #     vector12 = point2 - point1
+    #     vector = Matrix([vector12[0], vector12[1]])
+    #     theta = acos((i_hat.dot(vector))/(vector.norm()))
+    #     return theta
     
-    def GetRotationPoints(self):
-        diff_list = self.GetDiff()
-        angles = self.RoundAngles()
+    # def GetRotationPoints(self):
+    #     diff_list = self.GetDiff()
+    #     angles = self.RoundAngles()
 
 
-        total_angle = 0
-        total_pos_x = 0
-        total_pos_y = 0
-        point1 = Matrix([0,0])
-        point2 = Matrix([0,0])
+    #     total_angle = 0
+    #     total_pos_x = 0
+    #     total_pos_y = 0
+    #     point1 = Matrix([0,0])
+    #     point2 = Matrix([0,0])
 
-        for i in range(0, len(angles)-1):
+    #     for i in range(0, len(angles)-1):
             
-            if abs(angles[i]) == 45:
+    #         if abs(angles[i]) == 45:
                 
-                point1 = Matrix([total_pos_x, total_pos_y])
-                point2 = Matrix([total_pos_x + 5*diff_list[i]*cos(np.deg2rad(total_angle + angles[i])), total_pos_y + 5*diff_list[i]*sin(np.deg2rad(total_angle + angles[i]))])
-                break
+    #             point1 = Matrix([total_pos_x, total_pos_y])
+    #             point2 = Matrix([total_pos_x + 5*diff_list[i]*cos(np.deg2rad(total_angle + angles[i])), total_pos_y + 5*diff_list[i]*sin(np.deg2rad(total_angle + angles[i]))])
+    #             break
 
-            total_angle += angles[i]
-            total_pos_x += 5*diff_list[i]*cos(np.deg2rad(total_angle))
-            total_pos_y += 5*diff_list[i]*sin(np.deg2rad(total_angle))
+    #         total_angle += angles[i]
+    #         total_pos_x += 5*diff_list[i]*cos(np.deg2rad(total_angle))
+    #         total_pos_y += 5*diff_list[i]*sin(np.deg2rad(total_angle))
 
-        return [point1, point2]
+    #     return [point1, point2]
     
 
     # figure out how much to rotate image for U-shaped element orientation
@@ -276,14 +278,14 @@ class ModifyElement:
     def GeneratePoints(self):
         init_x = self.GetBoundary()[0][0] + 50
         init_y = -1*self.GetBoundary()[1][0] + 50
-        pos_list = self.GetPosDual()
+        pos_list = self.GetPosFinal()
         diff_list = self.GetFinalDiff()
         angles = self.RoundAngles()
         
         canvas = [(init_x, init_y)]
         
         total_angle = 0
-        total_pos_x = 5*pos_list[0] + init_x
+        total_pos_x = 5*pos_list[1] + init_x
         total_pos_y = init_y
         
         for i in range(0, len(angles)-1):
@@ -381,7 +383,7 @@ OB1K71_6_bridge = df.loc[187,:].tolist()
 # IGBT_offset = df.loc[193,:].tolist()
 # IGBT_6_bridge = df.loc[197,:].tolist()
 
-p1 = ModifyElement(3, OB1K71_6_bridge, 10)
+p1 = ModifyElement(1, OB1K71_6_bridge, 15)
 # p2 = MetalBending(OB1K71_5_bridge, innerLength, five_leg, clearance, speed, flatbridgep1, angleThree, depthChangep1, fusetype)
 
 
@@ -392,7 +394,7 @@ p1 = ModifyElement(3, OB1K71_6_bridge, 10)
 # df2 = pd.DataFrame(df_198)
 
 # print(p1.EditElementLength())
-print(p1.GetFinalDiff())
+print(p1.GetPosFinal())
 p1.line('testd.png')
 
 # df1.to_csv('OB1K71by.csv', header=True, mode='w', index = False)
