@@ -25,4 +25,4 @@ body.
 * Extrapolate the data for expected voltage, amperage, stress distribution,
 temperature distribution, watt loss to easy to read format for engineers and technicians
 
-![image](https://github.com/jerich931/element-fuser/assets/139656538/8f2e3087-ab6e-4422-adf1-db371f750d77)
+![image](https://github.com/jerich931/element-fuser/assets/139656538/747c7039-c3f2-4ad6-b739-aa3ec2f607bb)
